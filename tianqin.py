@@ -15,7 +15,7 @@ def getdata(begindate,enddate,symbol='T1903',exchange='CFFEX'):
     print (InstrumentID)
     print (startDT)
     print (endDT)
-    td = DataDownloader(api, symbol_list=InstrumentID, dur_sec=0,start_dt=startDT, end_dt=endDT, csv_file_name=(begindate+"_"+InstrumentID+".csv"))
+    td = DataDownloader(api, symbol_list=InstrumentID, dur_sec=0,start_dt=startDT, end_dt=endDT, csv_file_name=("IC/"+begindate+"_"+InstrumentID+".csv"))
     # 使用with closing机制确保下载完成后释放对应的资源
     while not td.is_finished():
         api.wait_update()
@@ -36,8 +36,8 @@ def getRange(df):
         symboltype=df.loc[bf,'symboltype']
         InstrumentID=df.loc[bf,'InstrumentID']
         print ("before:%s after:%s instrument:%s exchange:%s"%(bf,aft,symboltype,InstrumentID))
-        getdata(bf,aft,'IF1812','CFFEX')
+        getdata(bf,aft,InstrumentID,'CFFEX')
     
 if __name__=='__main__':
-    df=getMainContract("IF")
+    df=getMainContract("TF")
     getRange(df)
