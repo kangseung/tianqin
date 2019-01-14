@@ -10,7 +10,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 ipaddress="""127.0.0.1"""
-engine=create_engine('postgresql+psycopg2://postgres:@%s:5432/ticks_timescale_full'%ipaddress)
+engine=create_engine('postgresql+psycopg2://postgres:Bboy123456!!@%s:5432/ticks_timescale_full'%ipaddress)
 ''' cover TQdata to my data'''
 """
     path="E:/2016-01-05_CFFEX.T1603.csv"
@@ -47,6 +47,8 @@ def convertTQdata(path,filename):
     df["upperlimit"]=0.0
     df["lowerlimit"]=0.0
     df=df[["datetime","instrument_id","exchange","lastprice","volume","bidprice1","askprice1","bidvolume1","askvolume1","bidvolume5",'bidvolume4', 'bidvolume3', 'bidvolume2','bidprice5', 'bidprice4','bidprice3', 'bidprice2', 'askvolume5', 'askvolume4', 'askvolume3','askvolume2', 'askprice5', 'askprice4', 'askprice3','askprice2','openinterest','turnover', 'lowerlimit', 'upperlimit']]
+    if instrument_id[1].isdigit():
+        return df,instrument_id[0:1]
     return df,instrument_id[0:2]
 
 def insertdf(df,item):
@@ -95,5 +97,6 @@ if __name__=="__main__":
                 targetpath = os.path.join(path, filelist[j])
                 name=os.path.basename(targetpath)
                 df,item=convertTQdata(targetpath,name)
-                insertdf(df,item)
+                print item
+                #insertdf(df,item)
 print "all data finished!!"
