@@ -10,7 +10,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 ipaddress="""127.0.0.1"""
-engine=create_engine('postgresql+psycopg2://postgres:Bboy123456!!@%s:5432/ticks_timescale_full'%ipaddress)
+engine=create_engine('postgresql+psycopg2://postgres:@%s:5432/ticks_timescale_full'%ipaddress)
 ''' cover TQdata to my data'''
 """
     path="E:/2016-01-05_CFFEX.T1603.csv"
