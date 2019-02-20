@@ -1,6 +1,7 @@
 # /usr/bin/env python
 #  -*- coding: utf-8 -*-
 import os
+import re
 import pandas as pd
 from datetime import datetime
 from contextlib import closing
@@ -65,11 +66,12 @@ exchangemap = {"a": "DCE",
                "sp": "SHFE",
                "eg": "DCE"}
 
-df = pd.read_csv("E:/maincontract.csv")
-trading_dayDF = pd.read_csv("E:/tradingday.csv")
+df = pd.read_csv("D:/TQDATA/maincontract.csv")
+df=df[["trading_day","instrument_id","symboltype"]]
+trading_dayDF = pd.read_csv("tradingday.csv")
 trading_dayDF = trading_dayDF.set_index("trading_day")
 trading_dayDF.index = pd.to_datetime(trading_dayDF.index, format='%Y%m%d')
-trading_dayDF = trading_dayDF.loc["2018-07-03":"2018-07-04"]
+# trading_dayDF = trading_dayDF.loc["2018-11-09":"2019-02-18"]
 symbollist = ['JR',
               'WH',
               'FG',
@@ -142,7 +144,12 @@ def getdata(startDT, endDT, symbol='T1903', exchange='CFFEX', symboltype='T'):
         api.wait_update()
         # print("progress: tick:%.2f%%" % (td.get_progress()))
 
+def getpreTradingday(tradingday):
+    return trading_dayDF[trading_dayDF.index<tradingday].index[-1]
 
+def regexSymbolHead(symbol):
+    p = re.compile('\\d')
+    return p.sub("", symbol)
 def getMainContract(symboltype):
     DF = df.loc[df["symboltype"] == symboltype, :]
     DF = DF.set_index("trading_day")
@@ -166,6 +173,19 @@ def getRange(df):
                 except:
                     print("trading_day%s not in DF!!!!!!!!!!!!!!!!!!!!!!!!!!!! symbol:%s" % (trading_day, symboltype))
 
+def getdownloadlist():
+    downloadlist=pd.read_csv("downloadlist.csv")
+    downloadlist.columns = ['trading_day', 'symbol']
+    downloadlist=downloadlist.dropna()
+    for index in downloadlist.index:
+        trading_day=downloadlist.loc[index,"trading_day"]
+        bf = datetime.strftime(getpreTradingday(trading_day), "%Y-%m-%d")
+        InstrumentID=downloadlist.loc[index,"symbol"]
+        symboltype=regexSymbolHead(InstrumentID)
+        getdata(bf + " 20:59:59", trading_day + " 15:15:00", InstrumentID, exchangemap[symboltype],
+                symboltype)
+
 
 if __name__ == '__main__':
-    getRange(trading_dayDF)
+    # getRange(trading_dayDF)
+    getdownloadlist()
